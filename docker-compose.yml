@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  web:
+    build: ./app
+    container_name: ollama-web-client
+    ports:
+      - "8080:8080"
+    environment:
+      - OLLAMA_API_URL=http://192.168.1.228:11434
+    restart: unless-stopped
+
