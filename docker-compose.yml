@@ -5,8 +5,21 @@ services:
     build: ./app
     container_name: ollama-web-client
     ports:
-      - "8080:8080"
+      - "11434:8080"
     environment:
       - OLLAMA_API_URL=http://192.168.1.228:11434
     restart: unless-stopped
 
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.${TRAEFIK_ROUTER:?Please configure the .env file}.rule=Host(`${HOST_NAME:?Please configure the .env file}`)
+      - traefik.http.routers.${TRAEFIK_ROUTER:?Please configure the .env file}.entrypoints=${TRAEFIK_ENTRY:?Please configure the .env file}
+      - traefik.http.routers.${TRAEFIK_ROUTER:?Please configure the .env file}.tls=true
+      - traefik.http.routers.${TRAEFIK_ROUTER:?Please configure the .env file}.tls.certresolver=letsencrypt
+      - traefik.http.routers.${TRAEFIK_ROUTER:?Please configure the .env file}.service=${TRAEFIK_SERVICE:?Please configure the .env file}
+      - traefik.http.services.${TRAEFIK_SERVICE:?Please configure the .env file}.loadbalancer.server.port=${TRAEFIK_PORT:?Please configure the .env file}
+    networks:
+      - traefik
+networks:
+  traefik:
+    external: true
